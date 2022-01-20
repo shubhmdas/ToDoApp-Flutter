@@ -36,11 +36,10 @@ class _TodoCardState extends State<TodoCard> {
             Checkbox(
                 value: widget.todo.done,
                 onChanged: (newValue)async {
-                  setState(() async {
-                    await Database(firestore: widget.firestore).updateTodo(
-                        uid: widget.uid, todoId: widget.todo.todoId
-                    );
-                  });
+                  await Database(firestore: widget.firestore).updateTodo(
+                  uid: widget.uid, todoId: widget.todo.todoId
+                  );
+                  // setState(() {});
                 },
             )
           ],

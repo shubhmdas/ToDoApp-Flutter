@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:todo_app/services/auth.dart';
+import 'package:todo_app/widgets/loading.dart';
 
 class Login extends StatefulWidget {
 
@@ -22,14 +23,15 @@ class _LoginState extends State<Login> {
     final _passwordController = TextEditingController();
 
     final _formKey = GlobalKey<FormState>();
+    bool loading = false;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login', style: TextStyle(fontFamily: 'Muli'),),
+        title: const Text('Login', style: TextStyle(fontFamily: 'Muli', fontWeight: FontWeight.bold),),
         centerTitle: true,
         elevation: 0,
       ),
-      body: Center(
+      body: loading ? const Loading() : Center(
         child: Padding(
           padding: const EdgeInsets.all(60.0),
           child: Builder(builder: (BuildContext context) {
@@ -59,6 +61,7 @@ class _LoginState extends State<Login> {
                     key: const ValueKey("signIn"),
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
+                        setState(() => loading = true);
                         final String? result = await Auth(auth: widget.auth).signIn(
                           email: _emailController.text.trim(),
                           password: _passwordController.text.trim(),
@@ -68,6 +71,7 @@ class _LoginState extends State<Login> {
                           _emailController.clear();
                           _passwordController.clear();
                         } else {
+                          setState(() => loading = true);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text(result ?? 'An error occurred!'))
                           );
