@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_app/constants.dart';
 import 'package:todo_app/screen_arguments.dart';
 import 'package:todo_app/widgets/ui_elements.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -22,16 +23,23 @@ class WelcomeScreen extends StatelessWidget {
             return Column(
               children: [
                 Container(
-                  height: constraints.maxHeight / 2,
+                  height: constraints.maxHeight * .5,
                   width: constraints.maxWidth,
                   padding: const EdgeInsets.all(20.0),
-                  alignment: Alignment.bottomCenter,
-
-                  child: Image.asset('assets/images/logo.png', width: constraints.maxWidth / 6, height: constraints.maxHeight / 10,)
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset('assets/images/logo.png', width: constraints.maxWidth * .26, height:
+                      constraints.maxHeight * .18),
+                      Text('ToDo', style: TextStyle(
+                          fontFamily: 'Muli', fontSize: constraints.maxHeight * .06, color: const Color.fromRGBO(71, 64, 64, 1), fontWeight: FontWeight.bold),
+                      )
+                    ],
+                  ),
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 0),
-                  height: constraints.maxHeight / 2,
+                  height: constraints.maxHeight * .5,
                   width: constraints.maxWidth,
                   child: Column(
                     children: [
@@ -43,7 +51,7 @@ class WelcomeScreen extends StatelessWidget {
                           style: TextStyle(fontFamily: 'Muli', fontSize: constraints.maxHeight / 32, color: Colors.black54, fontWeight: FontWeight.w600))
                         ],
                       ),
-                      SizedBox(height: constraints.maxHeight / 7,),
+                      SizedBox(height: constraints.maxHeight * .15,),
                       Column(
                         children: [
                           InkWell(

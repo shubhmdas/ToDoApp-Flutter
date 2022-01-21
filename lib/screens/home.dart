@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:todo_app/models/todo.dart';
 import 'package:todo_app/services/auth.dart';
 import 'package:todo_app/services/database.dart';
+import 'package:todo_app/widgets/loading.dart';
 import 'package:todo_app/widgets/todo_card.dart';
 
 class Home extends StatefulWidget {
   late FirebaseAuth auth;
   late FirebaseFirestore firestore;
+  bool isLoading = false;
 
   Home({Key? key, required this.auth, required this.firestore})
       : super(key: key);
@@ -31,14 +33,30 @@ class _HomeState extends State<Home> {
         centerTitle: true,
         actions: [
           IconButton(
-              onPressed: () {
-                Auth(auth: widget.auth).signOut();
+              onPressed: () async {
+                setState( () => widget.isLoading = true );
+                var result = await Auth(auth: widget.auth).signOut();
+                if (result == 'Success') {
+
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          result!,
+                          style: const TextStyle(
+                              color: Colors.white),
+                          textAlign: TextAlign.center,
+                        ),
+                        backgroundColor: Colors.black,
+                        elevation: 2,
+                      ));
+                }
               },
               icon: const Icon(Icons.exit_to_app))
         ],
       ),
-      body: Center(
-        child: Column(
+      body: Stack(children: [
+        Column(
           children: [
             const SizedBox(
               height: 20,
@@ -60,9 +78,9 @@ class _HomeState extends State<Home> {
                     Expanded(
                         child: TextFormField(
                             style: const TextStyle(
-                    color: Colors.white,
-                    fontFamily: 'Muli',
-                    fontWeight: FontWeight.w200),
+                                color: Colors.white,
+                                fontFamily: 'Muli',
+                                fontWeight: FontWeight.w200),
                             controller: _controller,
                             decoration: const InputDecoration(
                                 border: InputBorder.none))),
@@ -146,7 +164,8 @@ class _HomeState extends State<Home> {
             ))
           ],
         ),
-      ),
+        if (widget.isLoading) const Loading(),
+      ]),
     );
   }
 }
