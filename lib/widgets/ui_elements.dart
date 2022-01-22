@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 
 class CustomButton extends StatelessWidget {
 
-  late BoxConstraints constraint;
-  late String text;
-  CustomButton({Key? key, required this.constraint, required this.text}) : super(key: key);
+  final BoxConstraints constraint;
+  final String text;
+  const CustomButton({Key? key, required this.constraint, required this.text}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -58,9 +58,9 @@ class CustomButton extends StatelessWidget {
 
 class Facebook extends StatelessWidget {
 
-  late BoxConstraints constraint;
-  late String text;
-  Facebook({Key? key, required this.constraint, required this.text}) : super(key: key);
+  final BoxConstraints constraint;
+  final String text;
+  const Facebook({Key? key, required this.constraint, required this.text}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -108,9 +108,9 @@ class Facebook extends StatelessWidget {
 }
 
 class Google extends StatelessWidget {
-  late BoxConstraints constraint;
-  late String text;
-  Google({Key? key, required this.constraint, required this.text}) : super(key: key);
+  final BoxConstraints constraint;
+  final String text;
+  const Google({Key? key, required this.constraint, required this.text}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:todo_app/constants.dart';
 import 'package:todo_app/screen_arguments.dart';
 import 'package:todo_app/widgets/ui_elements.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -7,9 +6,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class WelcomeScreen extends StatelessWidget {
 
-  late FirebaseAuth auth;
-  late FirebaseFirestore firestore;
-  WelcomeScreen({Key? key, required this.auth, required this.firestore }) : super(key: key);
+  final FirebaseAuth auth;
+  final FirebaseFirestore firestore;
+  const WelcomeScreen({Key? key, required this.auth, required this.firestore }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,8 +17,6 @@ class WelcomeScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         body: LayoutBuilder(
           builder: (BuildContext context, BoxConstraints constraints) {
-            var height = constraints.maxHeight;
-            var width = constraints.maxWidth;
             return Column(
               children: [
                 Container(

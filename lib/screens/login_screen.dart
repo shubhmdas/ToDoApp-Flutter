@@ -9,9 +9,8 @@ import 'package:todo_app/widgets/loading.dart';
 import 'package:todo_app/widgets/ui_elements.dart';
 
 class LoginScreen extends StatefulWidget {
-  late FirebaseAuth auth;
-  late FirebaseFirestore firestore;
-  bool isLoading = false;
+  late final FirebaseAuth auth;
+  late final FirebaseFirestore firestore;
   final List<String> errors = [];
 
   LoginScreen({Key? key, required this.auth, required this.firestore})
@@ -25,8 +24,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-
   final _formKey = GlobalKey<FormState>();
+
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           InkWell(
                               onTap: () async {
                                 FocusManager.instance.primaryFocus!.unfocus();
-                                setState(() => widget.isLoading = true);
+                                setState(() => isLoading = true);
                                 if (_formKey.currentState!.validate()) {
                                   var result = await Auth(auth: widget.auth)
                                       .signIn(
@@ -88,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                               _passwordController.text.trim());
 
                                   if (result == 'Success') {
-                                    setState(() => widget.isLoading = false);
+                                    setState(() => isLoading = false);
                                     Navigator.pushNamed(context, '/home',
                                         arguments: ScreenArguments(
                                             widget.auth, widget.firestore));
@@ -108,7 +108,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     }
                                   }
                                 }
-                                setState(() => widget.isLoading = false);
+                                setState(() => isLoading = false);
                               },
                               child: CustomButton(
                                   constraint: constraints,
@@ -213,7 +213,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ))
                 ],
               ),
-              if (widget.isLoading) const Loading(),
+              if (isLoading) const Loading(),
             ]);
           },
         )));
@@ -234,6 +234,7 @@ class _LoginScreenState extends State<LoginScreen> {
           focusedBorder: const OutlineInputBorder(
               borderSide: BorderSide(color: Color.fromRGBO(116, 119, 224, 1), width: 2)
           ),
+          enabledBorder: InputBorder.none,
           fillColor: const Color.fromRGBO(241, 244, 251, 1),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(4),
@@ -260,6 +261,7 @@ class _LoginScreenState extends State<LoginScreen> {
           focusedBorder: const OutlineInputBorder(
               borderSide: BorderSide(color: Color.fromRGBO(116, 119, 224, 1), width: 2)
           ),
+          enabledBorder: InputBorder.none,
           hintText: 'Password',
           filled: true,
           fillColor: const Color.fromRGBO(241, 244, 251, 1),

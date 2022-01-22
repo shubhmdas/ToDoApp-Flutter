@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:todo_app/screens/login_screen.dart';
 import 'package:todo_app/services/auth.dart';
 import 'package:todo_app/widgets/form_error.dart';
 import 'package:todo_app/widgets/loading.dart';
@@ -11,13 +10,11 @@ import '../constants.dart';
 import '../screen_arguments.dart';
 
 class Register extends StatefulWidget {
-  late FirebaseAuth auth;
-  late FirebaseFirestore firestore;
-  bool isLoading = false;
+  late final FirebaseAuth auth;
+  late final FirebaseFirestore firestore;
   final List<String> errors = [];
 
-  Register({Key? key, required this.auth, required this.firestore})
-      : super(key: key);
+  Register({Key? key, required this.auth, required this.firestore}) : super(key: key);
 
   @override
   State<Register> createState() => _RegisterState();
@@ -28,6 +25,7 @@ class _RegisterState extends State<Register> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +93,7 @@ class _RegisterState extends State<Register> {
                           InkWell(
                               onTap: () async {
                                 FocusManager.instance.primaryFocus!.unfocus();
-                                setState(() => widget.isLoading = true);
+                                setState(() => isLoading = true);
                                 if (_formKey.currentState!.validate()) {
                                   var result = await Auth(auth: widget.auth)
                                       .createUser(
@@ -104,7 +102,7 @@ class _RegisterState extends State<Register> {
                                               _passwordController.text.trim());
 
                                   if (result == 'Success') {
-                                    setState(() => widget.isLoading = false);
+                                    setState(() => isLoading = false);
                                     Navigator.pushNamed(context, '/home',
                                         arguments: ScreenArguments(
                                             widget.auth, widget.firestore));
@@ -125,7 +123,7 @@ class _RegisterState extends State<Register> {
                                     }
                                   }
                                 }
-                                setState(() => widget.isLoading = false);
+                                setState(() => isLoading = false);
                               },
                               child: CustomButton(
                                   constraint: constraints, text: 'Sign Up')),
@@ -228,7 +226,7 @@ class _RegisterState extends State<Register> {
                   ),
                 ],
               ),
-              if (widget.isLoading) const Loading(),
+              if (isLoading) const Loading(),
             ]);
           },
         ),
@@ -254,6 +252,7 @@ class _RegisterState extends State<Register> {
           focusedBorder: const OutlineInputBorder(
               borderSide: BorderSide(
                   color: Color.fromRGBO(116, 119, 224, 1), width: 2)),
+          enabledBorder: InputBorder.none,
           fillColor: const Color.fromRGBO(241, 244, 251, 1),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(4),
@@ -285,6 +284,7 @@ class _RegisterState extends State<Register> {
           focusedBorder: const OutlineInputBorder(
               borderSide: BorderSide(
                   color: Color.fromRGBO(116, 119, 224, 1), width: 2)),
+          enabledBorder: InputBorder.none,
           fillColor: const Color.fromRGBO(241, 244, 251, 1),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(4),
@@ -315,6 +315,7 @@ class _RegisterState extends State<Register> {
           focusedBorder: const OutlineInputBorder(
               borderSide: BorderSide(
                   color: Color.fromRGBO(116, 119, 224, 1), width: 2)),
+          enabledBorder: InputBorder.none,
           hintText: 'Password',
           filled: true,
           fillColor: const Color.fromRGBO(241, 244, 251, 1),

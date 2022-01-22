@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:todo_app/route_generator.dart';
-import 'package:todo_app/screens/home.dart';
+import 'package:todo_app/screens/nav_home.dart';
 import 'package:todo_app/screens/welcome_screen.dart';
 import 'package:todo_app/services/auth.dart';
 import 'package:todo_app/widgets/loading.dart';
@@ -33,7 +33,6 @@ class _RootState extends State<Root> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData.dark(),
       home: StreamBuilder(
         stream: Auth(auth: _auth).user,
           builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {

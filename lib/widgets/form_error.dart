@@ -4,9 +4,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class FormError extends StatelessWidget {
   
-  late List<String> errors;
-  late BoxConstraints constraints;
-  FormError({Key? key, required this.errors, required this.constraints }) : super(key: key);
+  final List<String> errors;
+  final BoxConstraints constraints;
+  const FormError({Key? key, required this.errors, required this.constraints }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
