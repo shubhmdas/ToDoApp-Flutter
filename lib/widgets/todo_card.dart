@@ -9,9 +9,9 @@ class TodoCard extends StatefulWidget {
   final FirebaseFirestore firestore;
   final TodoModel todo;
   final String uid;
-  final String item;
+  final String status;
 
-  const TodoCard({Key? key,  required this.firestore, required this.todo, required this.uid, required this.item }) : super(key: key);
+  const TodoCard({ Key? key,  required this.firestore, required this.todo, required this.uid, required this.status }) : super(key: key);
 
   @override
   _TodoCardState createState() => _TodoCardState();
@@ -20,30 +20,23 @@ class TodoCard extends StatefulWidget {
 class _TodoCardState extends State<TodoCard> {
   @override
   Widget build(BuildContext context) {
-    late BorderRadius borderRadius;
-    if (widget.item == 'first') {
-      borderRadius = const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4));
-    } else if (widget.item == 'last') {
-      borderRadius = const BorderRadius.only(bottomLeft: Radius.circular(4), bottomRight: Radius.circular(4));
-    } else {
-      borderRadius = BorderRadius.zero;
-    }
     return Container(
-      margin: const EdgeInsets.fromLTRB(14, 0, 14, 0),
-      decoration: BoxDecoration(
+      margin: const EdgeInsets.symmetric(horizontal: 14),
+      decoration: const BoxDecoration(
         color: Colors.white,
-        borderRadius: borderRadius,
+        borderRadius: BorderRadius.zero,
       ),
       child: Padding(
         padding: const EdgeInsets.all(2),
         child: Row(
           children: [
             Checkbox(
+              fillColor: MaterialStateProperty.all(Colors.grey),
               value: widget.todo.done,
-              onChanged: (newValue)async {
+              onChanged: (newValue) async {
                 await Database(firestore: widget.firestore).updateTodo(
-                    uid: widget.uid, todoId: widget.todo.todoId
-                );// setState(() {});
+                    uid: widget.uid, todoId: widget.todo.todoId, value: widget.todo.done
+                );
               },
             ),
             Expanded(
@@ -51,8 +44,9 @@ class _TodoCardState extends State<TodoCard> {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   widget.todo.content,
-                  style: const TextStyle(
-                      color: Colors.black87,
+                  style: TextStyle(
+                      fontSize: 20,
+                      color: widget.status == 'finished' ? Colors.black87 : Colors.grey,
                       fontFamily: 'Muli',
                       fontWeight: FontWeight.w200),
                 ),

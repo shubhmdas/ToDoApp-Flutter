@@ -5,7 +5,9 @@ import 'package:todo_app/constants.dart';
 import 'package:todo_app/screens/nav_calendar.dart';
 import 'package:todo_app/screens/nav_settings.dart';
 import 'package:todo_app/screens/nav_todos.dart';
+import 'package:todo_app/services/auth.dart';
 import 'package:todo_app/services/database.dart';
+import 'package:intl/intl.dart';
 
 class Home extends StatefulWidget {
   final FirebaseAuth auth;
@@ -26,7 +28,6 @@ class _HomeState extends State<Home> {
   late double _width;
   late double _height;
   int _currentIndex = 0;
-  bool _isLoading = false;
   bool enableButton = false;
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
@@ -47,21 +48,19 @@ class _HomeState extends State<Home> {
 
   String getTimeString() {
     if (_selectedTime == null) {
-      String hour = TimeOfDay.now().hour < 10
-          ? '0${TimeOfDay.now().hour}'
-          : TimeOfDay.now().hour.toString();
-      String minute = TimeOfDay.now().minute + 5 < 10
-          ? '0${TimeOfDay.now().minute + 5}'
-          : (TimeOfDay.now().minute + 5).toString();
-      return '$hour:$minute';
+      DateTime tempDate = DateFormat("hh:mm").parse(
+          TimeOfDay.now().hour.toString() +
+              ":" +
+              TimeOfDay.now().minute.toString());
+      var dateFormat = DateFormat("h:mm a");
+      return dateFormat.format(tempDate);
     } else {
-      String hour = _selectedTime!.hour < 10
-          ? '0${_selectedTime!.hour}'
-          : _selectedTime!.hour.toString();
-      String minute = _selectedTime!.minute < 10
-          ? '0${_selectedTime!.minute}'
-          : _selectedTime!.minute.toString();
-      return '$hour:$minute';
+      DateTime tempDate = DateFormat("hh:mm").parse(
+          _selectedTime!.hour.toString() +
+              ":" +
+              _selectedTime!.minute.toString());
+      var dateFormat = DateFormat("h:mm a");
+      return dateFormat.format(tempDate);
     }
   }
 
@@ -90,9 +89,32 @@ class _HomeState extends State<Home> {
           backgroundColor: const Color.fromRGBO(207, 210, 239, 1.0),
           title: Text(
             _title,
-            style: const TextStyle(fontFamily: 'Muli', color: Colors.black87, fontWeight: FontWeight.w500),
+            style: const TextStyle(
+                fontFamily: 'Muli',
+                color: Colors.black87,
+                fontWeight: FontWeight.w500),
           ),
           centerTitle: true,
+          actions: [
+            IconButton(
+              onPressed: () async {
+                var result = await Auth(auth: widget.auth).signOut();
+                if (result != 'Success') {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(
+                      result!,
+                      style: const TextStyle(color: Colors.white),
+                      textAlign: TextAlign.center,
+                    ),
+                    backgroundColor: Colors.black,
+                    elevation: 2,
+                  ));
+                }
+              },
+              icon: const Icon(Icons.logout),
+              color: Colors.black87,
+            )
+          ],
         ),
         body: _navPages[_currentIndex],
         bottomNavigationBar: BottomNavigationBar(
@@ -109,8 +131,6 @@ class _HomeState extends State<Home> {
                 icon: Icon(Icons.sticky_note_2_sharp), label: 'Todos'),
             BottomNavigationBarItem(
                 icon: Icon(Icons.calendar_today), label: 'Calendar'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.settings), label: 'Settings'),
           ],
         ),
         floatingActionButton: FloatingActionButton(
@@ -150,112 +170,118 @@ class _HomeState extends State<Home> {
       barrierColor: Colors.black.withOpacity(0.5),
       transitionDuration: const Duration(milliseconds: 400),
       pageBuilder: (_, __, ___) {
-        return StatefulBuilder(
-            builder: (context, setState) {
-              return AlertDialog(
-                alignment: Alignment.bottomCenter,
-                insetPadding: EdgeInsets.zero,
-                titlePadding: EdgeInsets.zero,
-                title: Container(
-                  width: _width,
-                ),
-                contentPadding: EdgeInsets.zero,
-                shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(6), topLeft: Radius.circular(6))
-                ),
-                content: SizedBox(
-                  height: _height * .18,
-                  child: Column(
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+            alignment: Alignment.bottomCenter,
+            insetPadding: EdgeInsets.zero,
+            titlePadding: EdgeInsets.zero,
+            title: Container(
+              width: _width,
+            ),
+            contentPadding: EdgeInsets.zero,
+            shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(6), topLeft: Radius.circular(6))),
+            content: SizedBox(
+              height: _height * .14,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  TextFormField(
+                    onChanged: (value) {
+                      if (value.isNotEmpty) {
+                        setState(() => enableButton = true);
+                      } else {
+                        setState(() => enableButton = false);
+                      }
+                    },
+                    controller: _todoController,
+                    autofocus: true,
+                    style: const TextStyle(
+                        color: Colors.black87, fontFamily: 'Muli'),
+                    decoration: const InputDecoration(
+                        contentPadding: EdgeInsets.fromLTRB(14, 14, 14, 2),
+                        hintText: 'What would you like to do?',
+                        filled: false,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        hintStyle: TextStyle(
+                            color: Colors.grey,
+                            fontFamily: 'Muli',
+                            fontWeight: FontWeight.w400)),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      TextFormField(
-                        onChanged: (value) {
-                          if (value.isNotEmpty) {
-                            setState(() => enableButton = true);
-                          } else {
-                            setState(() => enableButton = false);
-                          }
-                        },
-                        controller: _todoController,
-                        autofocus: true,
-                        style: const TextStyle(
-                            color: Colors.black87, fontFamily: 'Muli'),
-                        decoration: const InputDecoration(
-                            contentPadding: EdgeInsets.fromLTRB(14, 14, 14, 2),
-                            hintText: 'What would you like to do?',
-                            filled: false,
-                            focusedBorder: InputBorder.none,
-                            enabledBorder: InputBorder.none,
-                            hintStyle: TextStyle(
-                                color: Colors.grey,
-                                fontFamily: 'Muli',
-                                fontWeight: FontWeight.w400)),
-                      ),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            children: [
-                              TextButton.icon(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                  showTodoDatePicker(context);
-                                },
-                                icon: const Icon(
-                                  Icons.calendar_today_outlined,
+                          TextButton.icon(
+                            onPressed: () async {
+                              var returnVar = await showTodoDatePicker(context);
+                              setState(() => _selectedDate = returnVar);
+                            },
+                            icon: const Icon(
+                              Icons.calendar_today_outlined,
+                              color: primaryColor,
+                            ),
+                            label: Text(
+                              getDateString(),
+                              style: const TextStyle(
                                   color: primaryColor,
-                                ),
-                                label: Text(
-                                  getDateString(),
-                                  style: const TextStyle(
-                                      color: primaryColor,
-                                      fontFamily: 'Muli',
-                                      fontWeight: FontWeight.w400),
-                                ),
-                                style: ButtonStyle(
-                                    padding: MaterialStateProperty.all(
-                                        const EdgeInsets.only(left: 10))),
-                              ),
-                              TextButton.icon(
-                                onPressed: () => showTodoTimePicker(context),
-                                icon: const Icon(
-                                  Icons.access_time,
-                                  color: primaryColor,
-                                ),
-                                label: Text(
-                                  getTimeString(),
-                                  style: const TextStyle(
-                                      color: primaryColor,
-                                      fontFamily: 'Muli',
-                                      fontWeight: FontWeight.w400),
-                                ),
-                                style: ButtonStyle(
-                                    padding: MaterialStateProperty.all(
-                                        const EdgeInsets.only(left: 10))),
-                              ),
-                            ],
+                                  fontFamily: 'Muli',
+                                  fontWeight: FontWeight.w400),
+                            ),
+                            style: ButtonStyle(
+                                padding: MaterialStateProperty.all(
+                                    const EdgeInsets.only(left: 10))),
                           ),
-                          IconButton(
-                            // disabledColor: primaryColor.withOpacity(.8),
-                            onPressed: enableButton ? () async {
-                              if (_todoController.text.isNotEmpty) {
-                                await Database(firestore: widget.firestore).addTodo(
-                                    uid: widget.auth.currentUser!.uid,
-                                    content: _todoController.text);
-                                setState(() => _todoController.clear());
-                              }
-                            } : null,
-                            icon: const Icon(Icons.send),
-                            color: primaryColor,
-                          )
+                          TextButton.icon(
+                            onPressed: () async {
+                              var returnVar = await showTodoTimePicker(context);
+                              setState(() => _selectedTime = returnVar!
+                                  .replacing(hour: returnVar.hourOfPeriod));
+                            },
+                            icon: const Icon(
+                              Icons.access_time,
+                              color: primaryColor,
+                            ),
+                            label: Text(
+                              getTimeString(),
+                              style: const TextStyle(
+                                  color: primaryColor,
+                                  fontFamily: 'Muli',
+                                  fontWeight: FontWeight.w400),
+                            ),
+                            style: ButtonStyle(
+                                padding: MaterialStateProperty.all(
+                                    const EdgeInsets.only(left: 10))),
+                          ),
                         ],
+                      ),
+                      IconButton(
+                        // disabledColor: primaryColor.withOpacity(.8),
+                        onPressed: enableButton
+                            ? () async {
+                                if (_todoController.text.isNotEmpty) {
+                                  await Database(firestore: widget.firestore)
+                                      .addTodo(
+                                          uid: widget.auth.currentUser!.uid,
+                                          content: _todoController.text);
+                                  _todoController.clear();
+                                  setState(() => enableButton = false);
+                                }
+                              }
+                            : null,
+                        icon: const Icon(Icons.send),
+                        color: primaryColor,
                       )
                     ],
-                  ),
-                ),
-              );
-            }
-        );
+                  )
+                ],
+              ),
+            ),
+          );
+        });
       },
       transitionBuilder: (_, anim, __, child) {
         Tween<Offset> tween;
@@ -276,9 +302,8 @@ class _HomeState extends State<Home> {
     );
   }
 
-  void showTodoDatePicker(BuildContext context) async {
-    // Navigator.of(context).pop();
-    _selectedDate = await showDatePicker(
+  Future<DateTime?> showTodoDatePicker(BuildContext context) {
+    return showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(DateTime.now().year - 1),
@@ -287,13 +312,9 @@ class _HomeState extends State<Home> {
       confirmText: 'SET',
       cancelText: 'CANCEL',
     );
-    customTodoInputDialog(context);
   }
 
-  void showTodoTimePicker(BuildContext context) async {
-    _selectedTime =
-        await showTimePicker(context: context, initialTime: TimeOfDay.now());
-
-    // customTodoInputDialog(context);
+  Future<TimeOfDay?> showTodoTimePicker(BuildContext context) {
+    return showTimePicker(context: context, initialTime: _selectedTime ?? TimeOfDay.now());
   }
 }

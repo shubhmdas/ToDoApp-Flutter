@@ -9,7 +9,7 @@ class Database {
   Stream<List<TodoModel>> streamTodos(String uid) {
     try {
       return firestore.collection('todos').doc(uid)
-          .collection('todos').where('done', isEqualTo: false)
+          .collection('todos')
           .snapshots().map((query) {
         return query.docs.map((DocumentSnapshot doc) {
           return TodoModel.fromDocumentSnapshot(snapshot: doc);
@@ -31,10 +31,10 @@ class Database {
     }
   }
 
-  Future<void> updateTodo({ required String uid, required String todoId }) async {
+  Future<void> updateTodo({ required String uid, required String todoId, required bool value }) async {
     try {
       await firestore.collection('todos').doc(uid).collection('todos').doc(todoId).update({
-        'done': true,
+        'done': !value,
       });
     } catch (e) {
       rethrow;

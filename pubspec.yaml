@@ -36,6 +36,7 @@ dependencies:
   lint:
   flutter_svg: ^1.0.2
   flutter_rounded_date_picker: ^2.0.2
+  table_calendar: ^3.0.3
 
 
   # The following adds the Cupertino Icons font to your application.
