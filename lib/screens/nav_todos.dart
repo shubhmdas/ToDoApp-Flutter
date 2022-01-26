@@ -23,50 +23,55 @@ class _TodosState extends State<Todos> {
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
-      Column(
-        children: [
-          Expanded(
-            child: StreamBuilder(
-              stream: Database(firestore: widget.firestore)
-                  .streamTodos(widget.auth.currentUser!.uid),
-              builder: (BuildContext context,
-                  AsyncSnapshot<List<TodoModel>> snapshot) {
-                if (snapshot.connectionState == ConnectionState.active) {
-                  if (snapshot.data!.isEmpty) {
-                    return const Center(
-                      child: Text(
-                        'You don\'t have any unfinished todos',
-                        style: TextStyle(
-                            color: Colors.black87,
-                            fontFamily: 'Muli',
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.w100),
-                      ),
-                    );
+      StreamBuilder(
+        stream: Database(firestore: widget.firestore)
+            .streamTodos(widget.auth.currentUser!.uid),
+        builder: (BuildContext context,
+            AsyncSnapshot<List<TodoModel>> snapshot) {
+          if (snapshot.connectionState == ConnectionState.active) {
+            if (snapshot.data!.isEmpty) {
+              return const Center(
+                child: Text(
+                  'You don\'t have any unfinished todos',
+                  style: TextStyle(
+                      color: Colors.black87,
+                      fontFamily: 'Muli',
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.w100),
+                ),
+              );
+            }
+            return ListView.builder(
+                itemCount: snapshot.data!.length,
+                itemBuilder: (context, index) {
+                  late String item;
+                  if (index == 0) {
+                    item = 'first';
+                  } else if (index == snapshot.data!.length - 1) {
+                    item = 'last';
+                  } else {
+                    item = 'none';
                   }
-                  return ListView.builder(
-                      itemCount: snapshot.data!.length,
-                      itemBuilder: (context, index) {
-                        return TodoCard(
-                          firestore: widget.firestore,
-                          todo: snapshot.data![index],
-                          uid: widget.auth.currentUser!.uid,
-                        );
-                      });
-                } else {
-                  return const Center(
-                    child: Text(
-                      'Loading...',
-                      style: TextStyle(
-                          color: Colors.black87,
-                          fontFamily: 'Muli',
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.w100),
-                    ),
+                  return TodoCard(
+                    firestore: widget.firestore,
+                    todo: snapshot.data![index],
+                    uid: widget.auth.currentUser!.uid,
+                    item: item,
                   );
-                }
-              },
-            ))],
+                });
+          } else {
+            return const Center(
+              child: Text(
+                'Loading...',
+                style: TextStyle(
+                    color: Colors.black87,
+                    fontFamily: 'Muli',
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.w100),
+              ),
+            );
+          }
+        },
       ),
       if (isLoading) const Loading(),
     ]);

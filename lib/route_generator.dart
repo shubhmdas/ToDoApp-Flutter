@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/screen_arguments.dart';
+import 'package:todo_app/screens/nav_home.dart';
 import 'package:todo_app/screens/nav_todos.dart';
 import 'package:todo_app/screens/login_screen.dart';
 import 'package:todo_app/screens/register.dart';
@@ -31,7 +32,7 @@ class RouteGenerator {
       case '/home':
         return MaterialPageRoute(builder: (_) {
           ScreenArguments arguments = args;
-          return Todos(auth: arguments.auth, firestore: arguments.firestore);
+          return Home(auth: arguments.auth, firestore: arguments.firestore);
         });
 
       default:

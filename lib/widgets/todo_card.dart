@@ -9,8 +9,9 @@ class TodoCard extends StatefulWidget {
   final FirebaseFirestore firestore;
   final TodoModel todo;
   final String uid;
+  final String item;
 
-  const TodoCard({Key? key,  required this.firestore, required this.todo, required this.uid }) : super(key: key);
+  const TodoCard({Key? key,  required this.firestore, required this.todo, required this.uid, required this.item }) : super(key: key);
 
   @override
   _TodoCardState createState() => _TodoCardState();
@@ -19,16 +20,32 @@ class TodoCard extends StatefulWidget {
 class _TodoCardState extends State<TodoCard> {
   @override
   Widget build(BuildContext context) {
+    late BorderRadius borderRadius;
+    if (widget.item == 'first') {
+      borderRadius = const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4));
+    } else if (widget.item == 'last') {
+      borderRadius = const BorderRadius.only(bottomLeft: Radius.circular(4), bottomRight: Radius.circular(4));
+    } else {
+      borderRadius = BorderRadius.zero;
+    }
     return Container(
-      margin: const EdgeInsets.all(16.0),
+      margin: const EdgeInsets.fromLTRB(14, 0, 14, 0),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: borderRadius,
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(15, 2, 2, 2),
+        padding: const EdgeInsets.all(2),
         child: Row(
           children: [
+            Checkbox(
+              value: widget.todo.done,
+              onChanged: (newValue)async {
+                await Database(firestore: widget.firestore).updateTodo(
+                    uid: widget.uid, todoId: widget.todo.todoId
+                );// setState(() {});
+              },
+            ),
             Expanded(
               child: Align(
                 alignment: Alignment.centerLeft,
@@ -41,14 +58,6 @@ class _TodoCardState extends State<TodoCard> {
                 ),
               ),
             ),
-            Checkbox(
-                value: widget.todo.done,
-                onChanged: (newValue)async {
-                  await Database(firestore: widget.firestore).updateTodo(
-                  uid: widget.uid, todoId: widget.todo.todoId
-                  );// setState(() {});
-                },
-            )
           ],
         ),
       ),

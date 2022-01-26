@@ -10,3 +10,9 @@ const String emptyEmailError = "Please enter your email";
 const String emptyPassError = "Please enter your password";
 
 const Color primaryColor = Color.fromRGBO(80, 87, 222, 1.0);
+
+Size getConstraints(BuildContext context) {
+  MediaQueryData queryData;
+  queryData = MediaQuery.of(context);
+  return queryData.size;
+}
