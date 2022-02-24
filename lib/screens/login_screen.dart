@@ -194,13 +194,16 @@ class _LoginScreenState extends State<LoginScreen> {
                                     fontSize: constraints.maxHeight / 52,
                                   ),
                                 ),
-                                Text(
-                                  ' Sign Up', style: TextStyle(
-                                    fontFamily: 'Muli',
-                                    color:
-                                        const Color.fromRGBO(116, 119, 224, 1),
-                                    fontWeight: FontWeight.w300,
-                                    fontSize: constraints.maxHeight / 52,
+                                InkWell(
+                                  onTap: () => Navigator.pushNamed(context, '/register', arguments: ScreenArguments(widget.auth, widget.firestore)),
+                                  child: Text(
+                                    ' Sign Up', style: TextStyle(
+                                      fontFamily: 'Muli',
+                                      color:
+                                          const Color.fromRGBO(116, 119, 224, 1),
+                                      fontWeight: FontWeight.w300,
+                                      fontSize: constraints.maxHeight / 52,
+                                    ),
                                   ),
                                 ),
                               ],

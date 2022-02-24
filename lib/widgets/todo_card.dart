@@ -3,15 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:todo_app/models/todo_model.dart';
 import 'package:todo_app/services/database.dart';
 
-
 class TodoCard extends StatefulWidget {
-
   final FirebaseFirestore firestore;
   final TodoModel todo;
   final String uid;
   final String status;
 
-  const TodoCard({ Key? key,  required this.firestore, required this.todo, required this.uid, required this.status }) : super(key: key);
+  const TodoCard(
+      {Key? key,
+      required this.firestore,
+      required this.todo,
+      required this.uid,
+      required this.status})
+      : super(key: key);
 
   @override
   _TodoCardState createState() => _TodoCardState();
@@ -35,8 +39,9 @@ class _TodoCardState extends State<TodoCard> {
               value: widget.todo.done,
               onChanged: (newValue) async {
                 await Database(firestore: widget.firestore).updateTodo(
-                    uid: widget.uid, todoId: widget.todo.todoId, value: widget.todo.done
-                );
+                    uid: widget.uid,
+                    todoId: widget.todo.todoId,
+                    value: widget.todo.done);
               },
             ),
             Expanded(
@@ -45,8 +50,10 @@ class _TodoCardState extends State<TodoCard> {
                 child: Text(
                   widget.todo.content,
                   style: TextStyle(
-                      fontSize: 20,
-                      color: widget.status == 'finished' ? Colors.black87 : Colors.grey,
+                      fontSize: 14,
+                      color: widget.status == 'finished'
+                          ? Colors.black87
+                          : Colors.grey,
                       fontFamily: 'Muli',
                       fontWeight: FontWeight.w200),
                 ),

@@ -12,14 +12,14 @@ class Todos extends StatefulWidget {
   final FirebaseAuth auth;
   final FirebaseFirestore firestore;
 
-  const Todos({Key? key, required this.auth, required this.firestore}) : super(key: key);
+  const Todos({Key? key, required this.auth, required this.firestore})
+      : super(key: key);
 
   @override
   _TodosState createState() => _TodosState();
 }
 
 class _TodosState extends State<Todos> {
-
   bool isLoading = false;
 
   @override
@@ -28,8 +28,8 @@ class _TodosState extends State<Todos> {
       StreamBuilder(
         stream: Database(firestore: widget.firestore)
             .streamTodos(widget.auth.currentUser!.uid),
-        builder: (BuildContext context,
-            AsyncSnapshot<List<TodoModel>> snapshot) {
+        builder:
+            (BuildContext context, AsyncSnapshot<List<TodoModel>> snapshot) {
           if (snapshot.connectionState == ConnectionState.active) {
             if (snapshot.data!.isEmpty) {
               return const Center(
@@ -38,20 +38,24 @@ class _TodosState extends State<Todos> {
                   style: TextStyle(
                       color: Colors.black87,
                       fontFamily: 'Muli',
-                      fontSize: 18.0,
+                      fontSize: 14.0,
                       fontWeight: FontWeight.w100),
                 ),
               );
             }
-            List<TodoModel> unfinished = snapshot.data!.where((element) => element.done == false).toList();
-            List<TodoModel> finished = snapshot.data!.where((element) => element.done == true).toList();
+            List<TodoModel> unfinished = snapshot.data!
+                .where((element) => element.done == false)
+                .toList();
+            List<TodoModel> finished = snapshot.data!
+                .where((element) => element.done == true)
+                .toList();
             return SingleChildScrollView(
               physics: const ScrollPhysics(),
               child: Column(
                 children: [
                   ListView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
                       itemCount: unfinished.length,
                       itemBuilder: (context, index) {
                         return TodoCard(
@@ -61,37 +65,40 @@ class _TodosState extends State<Todos> {
                           status: 'finished',
                         );
                       }),
-                  const SizedBox(height: 20,),
-                  if (finished.isNotEmpty) Column(
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 14),
-                        child: const Text(
-                          'Finished',
-                          style: TextStyle(
-                              color: Colors.black87,
-                              fontFamily: 'Muli',
-                              fontSize: 22,
-                              fontWeight: FontWeight.w500),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  if (finished.isNotEmpty)
+                    Column(
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 14),
+                          child: const Text(
+                            'Finished',
+                            style: TextStyle(
+                                color: Colors.black87,
+                                fontFamily: 'Muli',
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500),
+                          ),
+                          alignment: Alignment.centerLeft,
+                          color: Colors.white,
+                          padding: const EdgeInsets.fromLTRB(14, 10, 0, 0),
                         ),
-                        alignment: Alignment.centerLeft,
-                        color: Colors.white,
-                        padding: const EdgeInsets.fromLTRB(14, 10, 0, 0),
-                      ),
-                      ListView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: finished.length,
-                          itemBuilder: (context, index) {
-                            return TodoCard(
-                              firestore: widget.firestore,
-                              todo: finished[index],
-                              uid: widget.auth.currentUser!.uid,
-                              status: 'unfinished',
-                            );
-                          }),
-                    ],
-                  )
+                        ListView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: finished.length,
+                            itemBuilder: (context, index) {
+                              return TodoCard(
+                                firestore: widget.firestore,
+                                todo: finished[index],
+                                uid: widget.auth.currentUser!.uid,
+                                status: 'unfinished',
+                              );
+                            }),
+                      ],
+                    )
                 ],
               ),
             );

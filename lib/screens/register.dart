@@ -209,13 +209,16 @@ class _RegisterState extends State<Register> {
                                   fontSize: constraints.maxHeight / 52,
                                 ),
                               ),
-                              Text(
-                                ' Log In',
-                                style: TextStyle(
-                                  fontFamily: 'Muli',
-                                  color: const Color.fromRGBO(116, 119, 224, 1),
-                                  fontWeight: FontWeight.w300,
-                                  fontSize: constraints.maxHeight / 52,
+                              InkWell(
+                                onTap: () => Navigator.pushNamed(context, '/login', arguments: ScreenArguments(widget.auth, widget.firestore)),
+                                child: Text(
+                                  ' Log In',
+                                  style: TextStyle(
+                                    fontFamily: 'Muli',
+                                    color: const Color.fromRGBO(116, 119, 224, 1),
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: constraints.maxHeight / 52,
+                                  ),
                                 ),
                               ),
                             ],
